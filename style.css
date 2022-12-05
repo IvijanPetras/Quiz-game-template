@@ -179,7 +179,7 @@ button:hover {
 }
 
 .choice-clicked {
-  background-color: #38a1a9;
+  background-color: #38a1a9 !important;
 }
 
 .answerd-slide {
@@ -204,10 +204,19 @@ button:hover {
   text-align: center;
 }
 
+.disable-touch{
+  touch-action: none;
+}
+
 @media screen and (max-width: 600px) {
   .option {
     font-size: 17px;
   }
+
+  .option:hover{
+    background-color: #46c2cb;
+  }
+
   .question {
     font-size: 19px;
   }

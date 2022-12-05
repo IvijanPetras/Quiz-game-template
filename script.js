@@ -148,7 +148,9 @@ window.addEventListener("DOMContentLoaded", () => {
       choiceDiv.addEventListener(
         ["click"],
         (e) => {
+          console.log(e);
           if (answerArr.length > 1 + slideId) return maxAnswers(slideId);
+          console.log('prelazi');
           choice.selected = true;
           e.target.classList.add("choice-clicked");
           answerArr.push(+choiceDiv.innerText);
