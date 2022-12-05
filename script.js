@@ -3,13 +3,15 @@ window.addEventListener("DOMContentLoaded", () => {
   const prevBtn = document.querySelector(".prev-btn");
   const nextBtn = document.querySelector(".next-btn");
   const slideBtn = document.querySelectorAll(".slide-btn");
-  const questionContainer = document.querySelector(".question-container");
+  const gameContainer = document.querySelector(".game-container");
   const slideContainer = document.querySelector(".slide-container");
+  const slideBtnContainer = document.querySelector(".slide-btn-container");
   const question = document.querySelector(".question");
   const answers = document.querySelector(".answers");
   const showResults = document.createElement("button");
   let activeSlide = 0;
   let answerdSlidesNum = 0;
+  let slideBtnActive = slideBtn[activeSlide];
   showResults.disabled = true;
   //------------------------------ DB start
   const slideDB = [
@@ -18,11 +20,11 @@ window.addEventListener("DOMContentLoaded", () => {
       [
         {
           choice: 1,
-          correct: false,
+          slected: false,
         },
         {
           choice: 2,
-          correct: false,
+          selected: false,
         },
       ],
       {
@@ -35,11 +37,11 @@ window.addEventListener("DOMContentLoaded", () => {
       [
         {
           choice: 1,
-          correct: false,
+          selected: false,
         },
         {
           choice: 2,
-          correct: false,
+          selected: false,
         },
       ],
       {
@@ -52,11 +54,11 @@ window.addEventListener("DOMContentLoaded", () => {
       [
         {
           choice: 1,
-          correct: false,
+          selected: false,
         },
         {
           choice: 2,
-          correct: false,
+          selected: false,
         },
       ],
       {
@@ -69,11 +71,11 @@ window.addEventListener("DOMContentLoaded", () => {
       [
         {
           choice: 1,
-          correct: false,
+          selected: false,
         },
         {
           choice: 2,
-          correct: false,
+          selected: false,
         },
       ],
       {
@@ -84,18 +86,19 @@ window.addEventListener("DOMContentLoaded", () => {
   ];
   //------------------------------ DB end
 
-  // first initalization and display of slides 
+  // first initalization and display of slides
   initalizeSlidesDB(slideDB);
   displaySlides(slideDB);
 
-  // creates random number of possible choices 
+  // creates random number of possible choices
   function initalizeSlidesDB(arg) {
     for (let i = 0; i < arg.length; i++) {
       const slide = arg[i][1];
       createChoices(slide, randomNum(1, 6));
+      slideBtnActive.classList.add("active");
     }
   }
-  
+
   function createChoices(arr, n) {
     for (let i = 2; i < n + 2; ++i) {
       arr[i] = {
@@ -109,24 +112,24 @@ window.addEventListener("DOMContentLoaded", () => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  //handles maximum number of possible choices on each slide
+  //handles maximum number of possible choices alert
   function maxAnswers(slideId) {
     const messageAlert = document.createElement("div");
     const maxNum = slideId + 2;
     messageAlert.classList.add("alert-message");
     messageAlert.innerText = `Max number of answers is ${maxNum}`;
-    slideContainer.append(messageAlert);
+    gameContainer.append(messageAlert);
     setTimeout(() => {
       messageAlert.remove();
     }, 3000);
   }
 
   // adds differente background color to answerd if at least 1 answer given
-  function answerdSlides(){
-    if(slideDB[activeSlide][2].answers.length){
-      slideBtn[activeSlide].classList.add('answerd-slide');
+  function answerdSlides() {
+    if (slideDB[activeSlide][2].answers.length) {
+      slideBtn[activeSlide].classList.add("answerd-slide");
     }
-  };
+  }
 
   function displaySlides(slideDB) {
     const currentSlideQuestion = slideDB[activeSlide][0];
@@ -139,33 +142,44 @@ window.addEventListener("DOMContentLoaded", () => {
       choiceDiv.classList.add("option");
       choiceDiv.innerText = choice.choice;
       answers.append(choiceDiv);
+      if (choice.selected && answerArr.length <= slideId + 2) {
+        choiceDiv.classList.add("choice-clicked");
+      }
       choiceDiv.addEventListener(
-        "click",
-        () => {
+        ["click"],
+        (e) => {
           if (answerArr.length > 1 + slideId) return maxAnswers(slideId);
-          answerArr.push(choiceDiv.innerText)
+          choice.selected = true;
+          e.target.classList.add("choice-clicked");
+          answerArr.push(+choiceDiv.innerText);
           answerdSlides();
-          if(answerArr.length <= 1) answerdSlidesNum++;
-          if(answerdSlidesNum === 4) showResults.disabled = false;
+          if (answerArr.length <= 1) answerdSlidesNum++;
+          if (answerdSlidesNum === 4) showResults.disabled = false;
         },
         { once: true }
-        );
-      });
+      );
+    });
   }
 
   function removeSlide() {
     question.innerText = "";
     answers.innerHTML = "";
   }
-  
-  function animationHandler(){
-    slideContainer.classList.add('animate');
-    setTimeout(() => {
-        slideContainer.classList.remove("animate")
-    },800);
-  };
 
-  function btnDisplayHandler(){
+  function animationHandler() {
+    slideContainer.classList.add("animate");
+    setTimeout(() => {
+      slideContainer.classList.remove("animate");
+    }, 800);
+  }
+  //displays which slide button you're currently on
+  function slideBtnActiveHandler() {
+    slideBtnActive.classList.remove("active");
+    slideBtnActive = slideBtn[activeSlide];
+    slideBtnActive.classList.add("active");
+  }
+
+  function btnDisplayHandler() {
     if (question.previousElementSibling.innerText === "Show Results") {
       question.previousElementSibling.remove();
     }
@@ -174,38 +188,36 @@ window.addEventListener("DOMContentLoaded", () => {
       nextBtn.classList.add("hidden");
       showResults.classList.add("show-results");
       showResults.innerText = "Show Results";
-      console.log(question.parentNode)
       question.parentNode.insertBefore(showResults, question);
     }
     if (activeSlide === 0) prevBtn.classList.add("hidden");
     if (activeSlide < 3) nextBtn.classList.remove("hidden");
   }
 
-
-  
-  
   // all button listeners
   nextBtn.addEventListener("click", () => {
-    animationHandler();
     activeSlide++;
-    btnDisplayHandler();
-    removeSlide();
-    displaySlides(slideDB);
-    console.log(activeSlide)
-  });
-  
-  prevBtn.addEventListener("click", () => {
+    slideBtnActiveHandler();
     animationHandler();
-    activeSlide--;
     btnDisplayHandler();
     removeSlide();
     displaySlides(slideDB);
-    console.log(activeSlide)
   });
-  
-  slideBtn.forEach(btn => {
-    btn.addEventListener('click', (e) =>{
+
+  prevBtn.addEventListener("click", () => {
+    slideBtnActive.classList.remove("active");
+    activeSlide--;
+    slideBtnActiveHandler();
+    animationHandler();
+    btnDisplayHandler();
+    removeSlide();
+    displaySlides(slideDB);
+  });
+
+  slideBtn.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       activeSlide = +e.target.innerText - 1;
+      slideBtnActiveHandler();
       animationHandler();
       btnDisplayHandler();
       removeSlide();
@@ -213,24 +225,23 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  showResults.addEventListener('click', () => {
-    prevBtn.remove();
-    showResults.remove();
-    questionContainer.remove();
-    answers.remove();
-    removeSlide();
-    slideDB.forEach(item => {
+  showResults.addEventListener("click", () => {
+    slideBtnActive.classList.remove("active");
+    slideContainer.remove();
+    slideBtnContainer.remove();
+    slideDB.forEach((item) => {
       const itemQuestion = item[0];
       const itemAnswers = item[2].answers;
-      const itemElement = document.createElement('div');
-      itemElement.classList.add('question-result');
+      const itemElement = document.createElement("div");
+      itemElement.classList.add("results");
+      gameContainer.classList.remove("game-container");
       itemElement.innerText = `${itemQuestion}: `;
-      slideContainer.append(itemElement);
-      itemAnswers.forEach(answer => {
-        const removedNotch = ` ${answer}, `;
-        itemElement.append(removedNotch);
-      })
-    })
+      gameContainer.append(itemElement);
+      itemAnswers.forEach((answer) => {
+        const answerApend = ` ${answer}, `;
+        itemElement.append(answerApend);
+      });
+      itemElement.innerText = itemElement.innerText.slice(0, -1);
+    });
   });
-
 });
