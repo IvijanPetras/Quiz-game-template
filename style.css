@@ -267,8 +267,8 @@ button:hover {
 .animate {
   -webkit-animation-name: slideTransition;
   animation-name: slideTransition;
-  -webkit-animation-duration: 0.8s;
-  animation-duration: 0.8s;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
   -webkit-animation-timing-function: ease-in-out;
   animation-timing-function: ease-in-out;
 }

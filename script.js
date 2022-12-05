@@ -170,7 +170,7 @@ window.addEventListener("DOMContentLoaded", () => {
     slideContainer.classList.add("animate");
     setTimeout(() => {
       slideContainer.classList.remove("animate");
-    }, 800);
+    }, 500);
   }
   //displays which slide button you're currently on
   function slideBtnActiveHandler() {
